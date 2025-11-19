@@ -29,11 +29,12 @@ const prisma = new PrismaClient({
 });
 
 prisma.$on('query', (event) => {
-  let formattedQuery;
+  let formattedQuery = event.query.trim();
   try {
     formattedQuery = formatSql(event.query, { language: 'mysql' });
+    formattedQuery = mergeLimitOffset(formattedQuery);
   } catch (err) {
-    formattedQuery = event.query.trim();
+    // ignore formatting errors, fall back to raw SQL
   }
   const paramString =
     event.params && event.params !== '[]' ? `-- params: ${event.params}` : '';
@@ -42,5 +43,9 @@ prisma.$on('query', (event) => {
     : formattedQuery;
   console.log('[SQL]\n' + message);
 });
+
+const mergeLimitOffset = (query) => {
+  return query.replace(/LIMIT\s*\?\s*\nOFFSET\s*\?/gi, 'LIMIT ? OFFSET ?');
+};
 
 module.exports = prisma;

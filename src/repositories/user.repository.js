@@ -1,3 +1,4 @@
+const { randomUUID } = require('crypto');
 const prisma = require('../database/prismaClient');
 const User = require('../models/user.model');
 
@@ -39,9 +40,10 @@ class UserRepository {
     return user ? User.fromDb(user) : null;
   }
 
-  async create({ name, email, role }) {
+  async create({ publicId, name, email, role }) {
+    const uuid = publicId || randomUUID();
     const user = await this.prisma.user.create({
-      data: { name, email, role },
+      data: { publicId: uuid, name, email, role },
     });
     return User.fromDb(user);
   }
