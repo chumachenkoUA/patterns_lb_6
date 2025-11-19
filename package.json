@@ -1,0 +1,28 @@
+{
+  "name": "solid-users-service",
+  "version": "1.0.0",
+  "description": "Learning project demonstrating SOLID principles with Node.js, Express, and MySQL.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy"
+  },
+  "keywords": [
+    "express",
+    "solid",
+    "mysql"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^7.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4",
+    "prisma": "^7.0.0"
+  }
+}
