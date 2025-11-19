@@ -73,10 +73,7 @@ class UserService {
     try {
       return await this.userRepository.create(userData);
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw createHttpError(409, 'Email already exists');
-      }
-      throw error;
+      this.handlePrismaError(error);
     }
   }
 
@@ -84,18 +81,16 @@ class UserService {
     await this.getUserByPublicId(publicId);
     const userData = this.validateUserPayload({ name, email, role });
     await this.ensureEmailUnique(userData.email, publicId);
+    let updatedUser;
     try {
-      const updatedUser = await this.userRepository.update(publicId, userData);
-      if (!updatedUser) {
-        throw createHttpError(404, 'User not found');
-      }
-      return updatedUser;
+      updatedUser = await this.userRepository.update(publicId, userData);
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw createHttpError(409, 'Email already exists');
-      }
-      throw error;
+      this.handlePrismaError(error);
     }
+    if (!updatedUser) {
+      throw createHttpError(404, 'User not found');
+    }
+    return updatedUser;
   }
 
   async deleteUser(publicId) {
@@ -137,6 +132,13 @@ class UserService {
     if (existingUser && existingUser.publicId !== ignorePublicId) {
       throw createHttpError(409, 'Email already exists');
     }
+  }
+
+  handlePrismaError(error) {
+    if (error?.code === 'P2002') {
+      throw createHttpError(409, 'Email already exists');
+    }
+    throw error;
   }
 }
 

@@ -7,6 +7,7 @@ const {
 } = require('./src/middleware/error.middleware');
 const { ALLOWED_ROLES } = require('./src/config/roles');
 const prisma = require('./src/database/prismaClient');
+const { ensureUsersTable } = require('./src/database/bootstrap');
 
 const app = express();
 
@@ -48,6 +49,7 @@ const PORT = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     await prisma.$connect();
+    await ensureUsersTable();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
