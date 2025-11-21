@@ -27,6 +27,9 @@ DB_PASSWORD=secret
 DB_NAME=solid_users_db
 DATABASE_URL="mysql://root:secret@127.0.0.1:3306/solid_users_db"
 PORT=3000
+JWT_SECRET=super-secret-key
+JWT_EXPIRES_IN=3600
+DEFAULT_USER_PASSWORD=ChangeMe123!
 ```
 
 ## Створення бази даних
@@ -40,6 +43,7 @@ CREATE TABLE users (
   public_id CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
   role ENUM('USER', 'ADMIN', 'SUPER_ADMIN') NOT NULL DEFAULT 'USER',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -103,7 +107,7 @@ curl -G http://localhost:3000/api/users/search --data-urlencode "id=5"
 ```bash
 curl -X POST http://localhost:3000/api/users \
   -H "Content-Type: application/json" \
-  -d '{"name":"John Doe","email":"john@example.com","role":"ADMIN"}'
+  -d '{"name":"John Doe","email":"john@example.com","password":"secret123","role":"ADMIN"}'
 ```
 
 ### 5. Оновити користувача
@@ -125,6 +129,24 @@ curl -X DELETE http://localhost:3000/api/users/<public_id>
 ```bash
 curl -X GET http://localhost:3000/status
 ```
+
+### 8. Реєстрація та логін (JWT на 1 годину)
+
+```bash
+# реєстрація звичайного користувача
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Jane Tester","email":"jane@test.com","password":"secret123"}'
+
+# логін (отримати новий токен)
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"jane@test.com","password":"secret123"}'
+```
+
+У відповіді сервер повертає `token`, `expiresAt` (UNIX-мітка), `expiresIn` (секунди) та дані користувача без пароля. Токен можна зберігати в `localStorage` на клієнті; він дійсний 1 годину.
+
+> Якщо в БД уже існують користувачі без паролів, під час старту сервісу їм автоматично виставиться пароль із `DEFAULT_USER_PASSWORD` (за замовчуванням `ChangeMe123!`). Змініть цю змінну в `.env`, залогіньтесь під старими акаунтами та поміняйте пароль.
 
 ## Архітектура
 

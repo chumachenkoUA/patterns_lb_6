@@ -2,10 +2,11 @@
   "name": "solid-users-service",
   "version": "1.0.0",
   "description": "Learning project demonstrating SOLID principles with Node.js, Express, and MySQL.",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "build": "tsc",
+    "start": "npm run build && node dist/app.js",
+    "dev": "ts-node-dev --respawn src/app.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy"
   },
@@ -19,13 +20,21 @@
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.0.0",
     "@prisma/client": "^7.0.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^16.6.1",
     "express": "^4.19.2",
-    "sql-formatter": "^15.4.6"
+    "jsonwebtoken": "^9.0.2",
+    "sql-formatter": "^15.4.6",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "nodemon": "^3.1.4",
-    "prisma": "^7.0.0"
+    "prisma": "^7.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
   }
 }

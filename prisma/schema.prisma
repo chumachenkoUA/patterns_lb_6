@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
@@ -23,6 +24,7 @@ model User {
   publicId  String   @unique @map("public_id") @default(uuid()) @db.Char(36)
   name      String   @db.VarChar(255)
   email     String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
   role      Role     @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
